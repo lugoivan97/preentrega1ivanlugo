@@ -27,19 +27,19 @@ function obtenerCuotas(){
 
 function calcularCuotas(monto, cuotas){
     let montoConInt, montoCuota;
-    if(cuotas>=1 && cuotas<=6){
+    switch(true){
+    case(cuotas>=1 && cuotas<=6):
         montoConInt=monto*interesTasas[0];
-        console.log("Interés: " + monto*(interesTasas[0]-1))
-    }
-    else if(cuotas>=7 && cuotas<=12){ 
+        console.log("Interés: " + monto*(interesTasas[0]-1));
+        break;
+    case(cuotas>=7 && cuotas<=12):
         montoConInt=monto*interesTasas[1];
-        console.log("Interés: " + monto*(interesTasas[1]-1))
-
-    }
-    else if(cuotas>=13 && cuotas <=24){
+        console.log("Interés: " + monto*(interesTasas[1]-1));
+        break;
+    case(cuotas>=13 && cuotas <=24):
         montoConInt=monto*interesTasas[2];
-        console.log("Interés: " + monto*(interesTasas[2]-1))
-
+        console.log("Interés: " + monto*(interesTasas[2]-1));
+        break;
     }
     montoCuota=montoConInt/cuotas;
     return{montoConInt, montoCuota};
