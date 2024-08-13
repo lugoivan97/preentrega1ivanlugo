@@ -3,10 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer src=" ./js/main.js"></script>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script defer src="./js/main.js"></script>
+
     <title>Pre-entrega 1</title>
 </head>
-<body>
-    <h1>Ivan Lugo</h1>
+<body class="lato-thin">
+    <header>
+        <h1>Prestamitos</h1>
+    </header>
+    <form id="formulario-prestamos">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" required>
+        <label for="monto">Monto:</label>
+        <input type="number" id="monto" required>
+        <label for="cuotas">Cuotas:</label>
+        <input type="number" id="cuotas" required>
+        <button type="submit">Solicitar Préstamo</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Monto</th>
+                <th>Cuotas</th>
+                <th>Monto Final con Intereses</th>
+                <th>Monto de Cuotas Mensuales</th>
+                <th>Interés Generado</th>
+            </tr>
+        </thead>
+        <tbody id="lista-prestamos">
+        </tbody>
+    </table>
 </body>
 </html>
