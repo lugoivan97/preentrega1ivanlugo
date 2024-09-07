@@ -1,31 +1,18 @@
-const interesTasas = [1.5, 1.75, 2];
-
-const obtenerTasaInteres = (cuotas) => {
-    if (cuotas >= 1 && cuotas <= 6) return interesTasas[0];
-    if (cuotas >= 7 && cuotas <= 12) return interesTasas[1];
-    return interesTasas[2];
-};
-const calcularInteres = (monto, montoConInt) => {
-    return montoConInt - monto;
-};
-
-const calcularCuotas = (monto, cuotas) => {
-    const tasaInteres = obtenerTasaInteres(cuotas);
-    const montoConInt = monto * tasaInteres;
-    const montoCuota = montoConInt / cuotas;
-    const interesGenerado = calcularInteres(monto, montoConInt);
-    return { montoConInt, montoCuota, interesGenerado };
-};
-
+import { calcularCuotas, mostrarError } from './utilidades.js';
 
 
 const guardarPrestamo = (prestamo) => {
-    let contadorPrestamos = parseInt(localStorage.getItem('contadorPrestamos')) || 0;
-    contadorPrestamos++;
-    const prestamoString = `${prestamo.nombre}|${prestamo.monto}|${prestamo.cuotas}|${prestamo.montoConInt}|${prestamo.montoCuota}|${prestamo.interesGenerado}`;
-    localStorage.setItem(`prestamo_${contadorPrestamos}`, prestamoString);
-    localStorage.setItem('contadorPrestamos', contadorPrestamos);
+    try {
+        let contadorPrestamos = parseInt(localStorage.getItem('contadorPrestamos')) || 0;
+        contadorPrestamos++;
+        const prestamoString = JSON.stringify(prestamo);
+        localStorage.setItem(`prestamo_${contadorPrestamos}`, prestamoString);
+        localStorage.setItem('contadorPrestamos', contadorPrestamos);
+    } catch (error) {
+        console.error('Error guardando el préstamo:', error);
+    }
 };
+
 
 const obtenerPrestamos = () => {
     let prestamos = [];
@@ -33,36 +20,52 @@ const obtenerPrestamos = () => {
     for (let i = 1; i <= contadorPrestamos; i++) {
         const prestamoString = localStorage.getItem(`prestamo_${i}`);
         if (prestamoString) {
-            const [nombre, monto, cuotas, montoConInt, montoCuota, interesGenerado] = prestamoString.split('|');
-            const prestamo = {
-                nombre,
-                monto: parseFloat(monto),
-                cuotas: parseInt(cuotas),
-                montoConInt: parseFloat(montoConInt),
-                montoCuota: parseFloat(montoCuota),
-                interesGenerado: parseFloat(interesGenerado)
-            };
+            const prestamo = JSON.parse(prestamoString);
             prestamos.push(prestamo);
         }
     }
     return prestamos;
 };
 
+
+const eliminarPrestamo = (index) => {
+    try {
+        const contadorPrestamos = parseInt(localStorage.getItem('contadorPrestamos')) || 0;
+        localStorage.removeItem(`prestamo_${index}`);
+        localStorage.setItem('contadorPrestamos', contadorPrestamos - 1);
+        registrarPrestamos(); 
+    } catch (error) {
+        console.error('Error eliminando el préstamo:', error);
+    }
+};
+
 const registrarPrestamos = () => {
     const prestamos = obtenerPrestamos();
-    const registroPrestamos = document.getElementById('lista-prestamos');
-    registroPrestamos.innerHTML = '';
-    prestamos.forEach(prestamo => {
-        const tablaResgistroPrestamo = document.createElement('tr');
-        tablaResgistroPrestamo.innerHTML = `
-            <td>${prestamo.nombre}</td>
-            <td>${prestamo.monto}</td>
-            <td>${prestamo.cuotas}</td>
-            <td>${prestamo.montoConInt}</td>
-            <td>${prestamo.montoCuota}</td>
-            <td>${prestamo.interesGenerado}</td>
+    const tablaPrestamos = document.getElementById('lista-prestamos');
+    tablaPrestamos.innerHTML = ''; 
+    prestamos.forEach((prestamo, index) => {
+        const fila = `
+            <tr>
+                <td>${prestamo.nombre}</td>
+                <td>${prestamo.monto.toFixed(2)}</td>
+                <td>${prestamo.cuotas}</td>
+                <td>${prestamo.montoConInt.toFixed(2)}</td>
+                <td>${prestamo.montoCuota.toFixed(2)}</td>
+                <td>${prestamo.interesGenerado.toFixed(2)}</td>
+                <td>${prestamo.moneda}</td>
+                <td>${prestamo.tipoPrestamo}</td>
+                <td><button class="btn-eliminar" data-index="${index + 1}">Eliminar</button></td>
+            </tr>
         `;
-        registroPrestamos.appendChild(tablaResgistroPrestamo);
+        tablaPrestamos.innerHTML += fila;
+    });
+
+    const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+    botonesEliminar.forEach(boton => {
+        boton.addEventListener('click', (event) => {
+            const index = event.target.getAttribute('data-index');
+            eliminarPrestamo(index);
+        });
     });
 };
 
@@ -71,13 +74,30 @@ document.getElementById('formulario-prestamos').addEventListener('submit', (even
     const nombre = document.getElementById('nombre').value;
     const monto = parseFloat(document.getElementById('monto').value);
     const cuotas = parseInt(document.getElementById('cuotas').value);
-    if (nombre && monto > 0 && cuotas > 0 && cuotas <= 24) {
-        const { montoConInt, montoCuota, interesGenerado } = calcularCuotas(monto, cuotas);
-        const prestamo = { nombre, monto, cuotas, montoConInt, montoCuota, interesGenerado };
+    const moneda = document.getElementById('moneda').value;
+    const tipoPrestamo = document.getElementById('tipo-prestamo').value;
+
+    if (nombre && monto > 0 && cuotas > 0 && cuotas <= 24 && tipoPrestamo) {
+        const { montoConInt, montoCuota, interesGenerado } = calcularCuotas(monto, cuotas, tipoPrestamo, moneda);
+        const prestamo = { nombre, monto, cuotas, montoConInt, montoCuota, interesGenerado, moneda, tipoPrestamo };
         guardarPrestamo(prestamo);
         registrarPrestamos();
+        mostrarError(''); 
     } else {
-        alert("Por favor ingrese valores válidos.");
+        mostrarError('Por favor ingrese valores válidos.');
+    }
+});
+
+document.getElementById('borrar-historial').addEventListener('click', () => {
+    try {
+        const contadorPrestamos = parseInt(localStorage.getItem('contadorPrestamos')) || 0;
+        for (let i = 1; i <= contadorPrestamos; i++) {
+            localStorage.removeItem(`prestamo_${i}`);
+        }
+        localStorage.removeItem('contadorPrestamos');
+        registrarPrestamos();
+    } catch (error) {
+        console.error('Error borrando el historial:', error);
     }
 });
 

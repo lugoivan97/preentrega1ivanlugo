@@ -1,39 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Préstamos</title>
     <link rel="stylesheet" href="./css/styles.css">
-    <script defer src="./js/main.js"></script>
-
-    <title>Pre-entrega 1</title>
+    <script defer src="./js/main.js" type="module"></script> 
 </head>
-<body class="lato-thin">
-    <header>
-        <h1>Prestamitos</h1>
-    </header>
+<body>
+    <h1>Simulador de Préstamos</h1>
     <form id="formulario-prestamos">
+        <div id="error"></div>
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" required>
+
         <label for="monto">Monto:</label>
-        <input type="number" id="monto" required>
-        <label for="cuotas">Cuotas:</label>
-        <input type="number" id="cuotas" required>
-        <button type="submit">Solicitar Préstamo</button>
+        <input type="number" id="monto" step="0.01" required>
+
+        <label for="cuotas">Número de Cuotas:</label>
+        <input type="number" id="cuotas" min="1" max="24" required>
+
+        <label for="moneda">Moneda:</label>
+        <select id="moneda" required>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="ARS">ARS</option>
+        </select>
+
+        <label for="tipo-prestamo">Tipo de Préstamo:</label>
+        <select id="tipo-prestamo" required>
+            <option value="Personal">Personal</option>
+            <option value="Auto">Auto</option>
+            <option value="Hipotecario">Hipotecario</option>
+        </select>
+
+        <button type="submit">Agregar Préstamo</button>
     </form>
+
+    <button id="borrar-historial">Borrar Historial</button>
+
     <table>
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Monto</th>
                 <th>Cuotas</th>
-                <th>Monto Final con Intereses</th>
-                <th>Monto de Cuotas Mensuales</th>
+                <th>Monto con Interés</th>
+                <th>Cuota Mensual</th>
                 <th>Interés Generado</th>
+                <th>Moneda</th>
+                <th>Tipo de Préstamo</th>
+                <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="lista-prestamos">
-        </tbody>
+        <tbody id="lista-prestamos"></tbody>
     </table>
 </body>
 </html>

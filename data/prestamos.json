@@ -1,0 +1,22 @@
+[
+    {
+        "nombre": "Juan Pérez",
+        "monto": 1000,
+        "cuotas": 12,
+        "montoConInt": 1170,
+        "montoCuota": 97.5,
+        "interesGenerado": 170,
+        "moneda": "USD",
+        "tipoPrestamo": "Personal"
+    },
+    {
+        "nombre": "Ana Gómez",
+        "monto": 2000,
+        "cuotas": 24,
+        "montoConInt": 2500,
+        "montoCuota": 104.17,
+        "interesGenerado": 500,
+        "moneda": "EUR",
+        "tipoPrestamo": "Hipotecario"
+    }
+]
